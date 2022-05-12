@@ -4,6 +4,8 @@
     {
         public int userId { get; set; }
 
+        public string authToken { get; set; }
+
         public int isVolunteer { get; set; }
 
         public int isAdmin { get; set; }

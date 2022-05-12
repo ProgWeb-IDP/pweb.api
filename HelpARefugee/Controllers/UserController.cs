@@ -22,7 +22,7 @@ namespace HelpARefugee.Controllers
         public JsonResult Get()
         {
             string query = @"
-                        select userId, firstName, lastName from dbo.Users";
+                        select userId, authToken, isVolunteer, isAdmin, firstName, lastName, birthDate, gender, phoneNumber, country, city, street, address, zipCode, registerDate from dbo.Users";
 
             DataTable table = new DataTable();
 
@@ -49,10 +49,18 @@ namespace HelpARefugee.Controllers
         public JsonResult Post(Users  user)
         {
             string query = @"
-                        insert into dbo.Users (firstName, lastName) values
+                        insert into dbo.Users (authToken, firstName, lastName, gender, phoneNumber, country, city, street, address, zipCode) values
                         (
+                            '" + user.authToken + @"',
                             '" + user.firstName + @"',
-                            '" + user.lastName + @"'
+                            '" + user.lastName + @"',
+                            '" + user.gender + @"',
+                            '" + user.phoneNumber + @"',
+                            '" + user.country + @"',
+                            '" + user.city + @"',
+                            '" + user.street + @"',
+                            '" + user.address + @"',
+                            '" + user.zipCode + @"'
                         )";
 
             DataTable table = new DataTable();
@@ -81,8 +89,17 @@ namespace HelpARefugee.Controllers
         {
             string query = @"update dbo.Users set
                             firstName = '" + user.firstName + @"',
-                            lastName = '" + user.lastName + @"'
-                            where userId = " + user.userId + @"
+                            lastName = '" + user.lastName + @"',
+                            isVolunteer = '" + user.isVolunteer + @"',
+                            isAdmin = '" + user.isAdmin + @"',
+                            gender = '" + user.gender + @"',
+                            phoneNumber = '" + user.phoneNumber + @"',
+                            country = '" + user.country + @"',
+                            city = '" + user.city + @"',
+                            street = '" + user.street + @"',
+                            address = '" + user.address + @"',
+                            zipCode = '" + user.zipCode + @"',
+                            where authToken = " + user.authToken + @"
                             ";
 
             DataTable table = new DataTable();
