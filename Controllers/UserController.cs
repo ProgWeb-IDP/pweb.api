@@ -90,6 +90,7 @@ namespace HelpARefugee.Controllers
             string query = @"update dbo.Users set
                             firstName = '" + user.firstName + @"',
                             lastName = '" + user.lastName + @"',
+                            authToken = '" + user.authToken + @"',
                             isVolunteer = '" + user.isVolunteer + @"',
                             isAdmin = '" + user.isAdmin + @"',
                             gender = '" + user.gender + @"',
