@@ -7,7 +7,7 @@ create table dbo.Users(
 	isAdmin int NOT NULL DEFAULT 0,
 	firstName varchar(30),
 	lastName varchar(30),
-	birthDate datetime,
+	birthDate date,
 	gender varchar(1),
 	phoneNumber varchar(12),
 	country varchar(30),
