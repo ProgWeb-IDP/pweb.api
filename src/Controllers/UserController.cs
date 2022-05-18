@@ -48,6 +48,7 @@ namespace HelpARefugee.Controllers
         [HttpPost]
         public JsonResult Post(Users  user)
         {
+            string checkQuery = @"SELECT userId FROM dbo.Users WHERE authToken = '" + user.authToken + @"'";
             string query = @"
                         insert into dbo.Users (authToken, firstName, lastName, gender, phoneNumber, country, city, street, address, zipCode) values
                         (
@@ -62,23 +63,46 @@ namespace HelpARefugee.Controllers
                             '" + user.address + @"',
                             '" + user.zipCode + @"'
                         )";
-
+            
             DataTable table = new DataTable();
+            DataTable table2 = new DataTable();
 
             string sqlDataSource = _configuration.GetConnectionString("UsersAppCon");
 
-            SqlDataReader myReader;
+            SqlDataReader myReader, myReader2;
+
+            bool noRows = false;
 
             using (SqlConnection myCon = new SqlConnection(sqlDataSource))
             {
                 myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                using (SqlCommand myCommand = new SqlCommand(checkQuery, myCon))
                 {
                     myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
+                    if(myReader.HasRows == false)
+                    {
+                        noRows = true;
+                    }
                     myReader.Close();
-                    myCon.Close();
                 }
+                try
+                {
+                    if (noRows)
+                    {
+                        using (SqlCommand myCommand2 = new SqlCommand(query, myCon))
+                        {
+                            myReader2 = myCommand2.ExecuteReader();
+                            table2.Load(myReader2);
+                            myReader2.Close();
+                            myCon.Close();
+                        }
+                    }
+                }
+                catch
+                {
+
+                }
+
             }
 
             return new JsonResult("Added Successfully");
@@ -99,8 +123,8 @@ namespace HelpARefugee.Controllers
                             city = '" + user.city + @"',
                             street = '" + user.street + @"',
                             address = '" + user.address + @"',
-                            zipCode = '" + user.zipCode + @"',
-                            where authToken = " + user.authToken + @"
+                            zipCode = '" + user.zipCode + @"' 
+                            where authToken = '" + user.authToken + @"'
                             ";
 
             DataTable table = new DataTable();

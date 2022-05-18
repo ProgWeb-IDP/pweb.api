@@ -22,9 +22,40 @@ namespace HelpARefugee.Controllers
         public JsonResult Get()
         {
             string query = @"
-                        select donationRequestId, volunteerId, requestStatus, resourceType,
-                        quantityNeeded, shortDescription, emissionDate, processingDate, completionDate
-                        from dbo.RequestForDonations";
+                        select RD.donationRequestId, U.firstName, U.lastName, RD.resourceType, RD.emissionDate
+                        from dbo.RequestForDonations RD, dbo.Users U
+                        where RD.volunteerId = U.userId and requestStatus = 1";
+
+            DataTable table = new DataTable();
+
+            string sqlDataSource = _configuration.GetConnectionString("UsersAppCon");
+
+            SqlDataReader myReader;
+
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            return new JsonResult(table);
+        }
+
+        [HttpGet("{id}")]
+        public JsonResult Get(int id)
+        {
+            string query = @"
+                        select U.firstName, U.lastName, RD.resourceType, RD.quantityNeeded, RD.shortDescription, RD.emissionDate,
+                        RD.volunteerId, RD.requestStatus, RD.processingDate, RD.completionDate, RD.donationRequestId
+                        from dbo.RequestForDonations RD, dbo.Users U
+                        where RD.volunteerId = U.userId
+                        and RD.donationRequestId = " + id + @"";
 
             DataTable table = new DataTable();
 
@@ -56,13 +87,9 @@ namespace HelpARefugee.Controllers
                         values
                         (
                             '" + donationRequest.volunteerId + @"',
-                            '" + donationRequest.requestStatus + @"',
                             '" + donationRequest.resourceType + @"',
                             '" + donationRequest.quantityNeeded + @"',
-                            '" + donationRequest.shortDescription + @"',
-                            '" + donationRequest.emissionDate + @"',
-                            '" + donationRequest.processingDate + @"',
-                            '" + donationRequest.completionDate + @"'
+                            '" + donationRequest.shortDescription + @"'
                         )";
 
             DataTable table = new DataTable();
@@ -90,7 +117,6 @@ namespace HelpARefugee.Controllers
         public JsonResult Put(HelpARefugee.Models.RequestForDonations donationRequest)
         {
             string query = @"update dbo.RequestForDonations set
-                            volunteerId = '" + donationRequest.volunteerId + @"',
                             requestStatus = '" + donationRequest.requestStatus + @"',
                             resourceType = '" + donationRequest.resourceType + @"',
                             quantityNeeded = '" + donationRequest.quantityNeeded + @"',
