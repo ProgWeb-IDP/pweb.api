@@ -45,6 +45,37 @@ namespace HelpARefugee.Controllers
             return new JsonResult(table);
         }
 
+
+        [HttpGet("{id}")]
+        public JsonResult Get(int id) // Get Volunteer Donation Requests
+        {
+            string query = @"
+                        select RD.donationRequestId, RD.resourceType, RD.emissionDate, RD.quantityNeeded, RD.requestStatus,
+                        COALESCE((SELECT SUM(quantityDonated) FROM dbo.UserDonations WHERE donationRequestId = RD.donationRequestId), 0) AS quantityGathered
+                        from dbo.RequestForDonations RD, dbo.Users U
+                        where RD.volunteerId = U.userId and U.userId = '" + id + @"'";
+
+            DataTable table = new DataTable();
+
+            string sqlDataSource = _configuration.GetConnectionString("UsersAppCon");
+
+            SqlDataReader myReader;
+
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            return new JsonResult(table);
+        }
+
         [HttpPut]
  
 

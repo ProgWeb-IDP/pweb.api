@@ -82,8 +82,8 @@ namespace HelpARefugee.Controllers
         public JsonResult Post(HelpARefugee.Models.RequestForDonations donationRequest)
         {
             string query = @"
-                        insert into dbo.RequestForDonations (volunteerId, requestStatus, resourceType, quantityNeeded,
-                        shortDescription, emissionDate, processingDate, completionDate) 
+                        insert into dbo.RequestForDonations (volunteerId, resourceType, quantityNeeded,
+                        shortDescription) 
                         values
                         (
                             '" + donationRequest.volunteerId + @"',
