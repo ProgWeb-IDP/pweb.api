@@ -52,7 +52,8 @@ namespace HelpARefugee.Controllers
         {
             string query = @"
                         select U.firstName, U.lastName, RD.resourceType, RD.quantityNeeded, RD.shortDescription, RD.emissionDate,
-                        RD.volunteerId, RD.requestStatus, RD.processingDate, RD.completionDate, RD.donationRequestId
+                        RD.volunteerId, RD.requestStatus, RD.processingDate, RD.completionDate, RD.donationRequestId,
+                        COALESCE((SELECT SUM(quantityDonated) FROM dbo.UserDonations WHERE donationRequestId = RD.donationRequestId), 0) AS quantityGathered
                         from dbo.RequestForDonations RD, dbo.Users U
                         where RD.volunteerId = U.userId
                         and RD.donationRequestId = " + id + @"";

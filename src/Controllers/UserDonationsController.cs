@@ -47,21 +47,47 @@ namespace HelpARefugee.Controllers
             return new JsonResult(table);
         }
 
+        [HttpGet("{id}")]
+        public JsonResult Get(int id)
+        {
+            string query = @"
+                        select UD.donationId, UD.userId, UD.volunteerId, UD.donationRequestId,
+                        UD.quantityDonated, UD.emissionDate, UD.collectionDate, UD.completionDate, UD.donationStatus, RD.resourceType
+                        from dbo.UserDonations UD, dbo.RequestForDonations RD
+                        where UD.donationRequestId = RD.donationRequestId and UD.userId = " + id + @"";
+
+            DataTable table = new DataTable();
+
+            string sqlDataSource = _configuration.GetConnectionString("UsersAppCon");
+
+            SqlDataReader myReader;
+
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            return new JsonResult(table);
+        }
+
         [HttpPost]
         public JsonResult Post(HelpARefugee.Models.UserDonations donation)
         {
             string query = @"
-                        insert into dbo.UserDonations (userId, volunteerId, donationRequestId, quantityDonated, emissionDate, collectionDate, completionDate, donationStatus) 
+                        insert into dbo.UserDonations (userId, donationRequestId, quantityDonated, donationStatus, volunteerId) 
                         values
                         (
                             '" + donation.userId + @"',
-                            '" + donation.volunteerId + @"',
                             '" + donation.donationRequestId + @"',
                             '" + donation.quantityDonated + @"',
-                            '" + donation.emissionDate + @"',
-                            '" + donation.collectionDate + @"',
-                            '" + donation.completionDate + @"',
-                            '" + donation.donationStatus + @"'
+                            '" + donation.donationStatus + @"', NULL
                         )";
 
             DataTable table = new DataTable();
