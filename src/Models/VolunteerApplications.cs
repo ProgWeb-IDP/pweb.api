@@ -8,7 +8,9 @@
 
         public int applicationStatus { get; set; }
 
-        public string role { get; set; }
+        public string roleId { get; set; }
+
+        public string locationId { get; set; }
 
         public string summary { get; set; }
 

@@ -22,7 +22,11 @@ namespace HelpARefugee.Controllers
         public JsonResult Get()
         {
             string query = @"
-                        select userId, authToken, isVolunteer, isAdmin, firstName, lastName, birthDate, gender, phoneNumber, country, city, street, address, zipCode, registerDate from dbo.Users";
+                        select U.userId, U.roleId, U.locationId, U.authToken, U.isVolunteer, U.isAdmin, U.firstName, 
+                        U.lastName, U.birthDate, U.gender, U.phoneNumber, U.country, U.city,
+                        U.street, U.address, U.zipCode, U.registerDate,
+                        COALESCE((SELECT COUNT(*) FROM dbo.UserDonations WHERE userId = U.userId), 0) AS numberOfDonations
+                        from dbo.Users U";
 
             DataTable table = new DataTable();
 
@@ -50,13 +54,15 @@ namespace HelpARefugee.Controllers
         {
             string checkQuery = @"SELECT userId FROM dbo.Users WHERE authToken = '" + user.authToken + @"'";
             string query = @"
-                        insert into dbo.Users (authToken, firstName, lastName, gender, phoneNumber, country, city, street, address, zipCode) values
+                        insert into dbo.Users (authToken, firstName, lastName, gender, phoneNumber, roleId, locationId, country, city, street, address, zipCode) values
                         (
                             '" + user.authToken + @"',
                             '" + user.firstName + @"',
                             '" + user.lastName + @"',
                             '" + user.gender + @"',
                             '" + user.phoneNumber + @"',
+                            " + user.roleId + @",
+                            " + user.locationId + @",
                             '" + user.country + @"',
                             '" + user.city + @"',
                             '" + user.street + @"',
@@ -119,6 +125,8 @@ namespace HelpARefugee.Controllers
                             isAdmin = '" + user.isAdmin + @"',
                             gender = '" + user.gender + @"',
                             phoneNumber = '" + user.phoneNumber + @"',
+                            roleId = " + user.roleId + @",
+                            locationId = " + user.locationId + @",
                             country = '" + user.country + @"',
                             city = '" + user.city + @"',
                             street = '" + user.street + @"',

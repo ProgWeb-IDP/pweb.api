@@ -22,7 +22,9 @@ namespace HelpARefugee.Controllers
         public JsonResult Get(string token)
         {
             string query = @"
-                        select userId, authToken, isVolunteer, isAdmin, firstName, lastName, birthDate, gender, phoneNumber, country, city, street, address, zipCode, registerDate from dbo.Users where authToken = " + token  + @"";
+                        select userId, roleId, locationId, authToken, isVolunteer, isAdmin, firstName, lastName, birthDate, gender, phoneNumber, country, city, street, address, zipCode, registerDate 
+                        from dbo.Users 
+                        where authToken = " + token  + @"";
 
             DataTable table = new DataTable();
 

@@ -22,7 +22,10 @@ namespace HelpARefugee.Controllers
         public JsonResult Get()
         {
             string query = @"
-                        select userId, authToken, isVolunteer, isAdmin, firstName, lastName, birthDate, gender, phoneNumber, country, city, street, address, zipCode, registerDate from dbo.Users where isVolunteer = 1";
+                        select U.userId, U.roleId, U.locationId, U.authToken, U.isVolunteer, U.isAdmin, U.firstName, U.lastName, U.birthDate, U.gender, 
+                        U.phoneNumber, U.country, U.city, U.street, U.address, U.zipCode, U.registerDate, VR.roleName, L.locationName
+                        from dbo.Users U, dbo.Locations L, dbo.VolunteerRoles VR
+                        where U.roleId = VR.roleId and L.locationId = U.locationId and U.isVolunteer = 1";
 
             DataTable table = new DataTable();
 
@@ -82,7 +85,7 @@ namespace HelpARefugee.Controllers
         [HttpDelete("{id}")]
         public JsonResult Delete(int id)
         {
-            string query = @"UPDATE dbo.Users SET isVolunteer = 0 WHERE userId = " + id + @"";
+            string query = @"UPDATE dbo.Users SET isVolunteer = 0, roleId = NULL, locationId = NULL WHERE userId = " + id + @"";
 
             DataTable table = new DataTable();
 

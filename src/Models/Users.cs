@@ -24,6 +24,10 @@
 
         public int isVolunteer { get; set; }
 
+        public int roleId { get; set; }
+
+        public int locationId { get; set; }
+
         public int isAdmin { get; set; }
 
         public string firstName { get; set; } 

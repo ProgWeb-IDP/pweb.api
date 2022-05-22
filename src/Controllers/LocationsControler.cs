@@ -79,7 +79,7 @@ namespace Locations.Controllers
         public JsonResult Put(HelpARefugee.Models.Locations location)
         {
             string query = @"update dbo.Locations set
-                            firstName = '" + location.locationName + @"'
+                            locationName = '" + location.locationName + @"'
                             where locationId = " + location.locationId + @"
                             ";
 

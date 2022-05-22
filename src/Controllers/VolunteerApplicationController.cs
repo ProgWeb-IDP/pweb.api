@@ -22,9 +22,9 @@ namespace HelpARefugee.Controllers
         public JsonResult Get()
         {
             string query = @"
-                        select VA.applicationId, VA.userId, VA.applicationStatus, VA.role, VA.summary, U.firstName, U.lastName
-                        from dbo.VolunteerApplications VA, dbo.Users U 
-                        where VA.userId = U.userId and VA.applicationStatus = 1";
+                        select VA.applicationId, VA.userId, VA.applicationStatus, VA.roleId, VA.locationId, VA.summary, U.firstName, U.lastName, VR.roleName
+                        from dbo.VolunteerApplications VA, dbo.Users U, dbo.VolunteerRoles VR
+                        where VA.userId = U.userId and VR.roleId = VA.roleId and VA.applicationStatus = 1";
 
             DataTable table = new DataTable();
 
@@ -51,9 +51,9 @@ namespace HelpARefugee.Controllers
         public JsonResult Get(int id)
         {
             string query = @"
-                        select VA.applicationId, VA.userId, VA.applicationStatus, VA.role, VA.summary, U.firstName, U.lastName
-                        from dbo.VolunteerApplications VA, dbo.Users U 
-                        where VA.userId = U.userId and VA.applicationId = " + id + @"";
+                        select VA.applicationId, VA.userId, VA.applicationStatus, VA.roleId, VA.locationId, VA.summary, U.firstName, U.lastName, VR.roleName, L.locationName
+                        from dbo.VolunteerApplications VA, dbo.Users U, dbo.VolunteerRoles VR, dbo.Locations L
+                        where VA.userId = U.userId and VR.roleId = VA.roleId and L.locationId = VA.locationId and VA.applicationId = " + id + @"";
 
             DataTable table = new DataTable();
 
@@ -81,10 +81,11 @@ namespace HelpARefugee.Controllers
         public JsonResult Post(HelpARefugee.Models.VolunteerApplications application)
         {
             string query = @"
-                        insert into dbo.VolunteerApplications (userId, role, summary) values
+                        insert into dbo.VolunteerApplications (userId, roleId, locationId, summary) values
                         (
                             '" + application.userId + @"',
-                            '" + application.role + @"',
+                            '" + application.roleId + @"',
+                            '" + application.locationId + @"',
                             '" + application.summary + @"'
                         )";
 
@@ -119,7 +120,10 @@ namespace HelpARefugee.Controllers
             string query2 = null;
             if(application.applicationStatus == 2) // Approve
             {
-                query2 = @"update dbo.Users set isVolunteer = 1 where userId = " + application.userId + @"";
+                  query2 = @"update dbo.Users set
+                            roleId = '" + application.roleId + @"',
+                            locationId = '" + application.locationId + @"',
+                            isVolunteer = 1 where userId = '" + application.userId + @"'";
             }
 
 

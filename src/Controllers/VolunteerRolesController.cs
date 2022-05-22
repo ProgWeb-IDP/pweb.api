@@ -82,7 +82,7 @@ namespace HelpARefugee.Controllers
             string query = @"update dbo.VolunteerRoles set
                             roleName = '" + role.roleName + @"',
                             shortDescription = '" + role.shortDescription + @"'
-                            where userId = " + role.roleId + @"
+                            where roleId = " + role.roleId + @"
                             ";
 
             DataTable table = new DataTable();
